@@ -2,7 +2,11 @@ import 'dotenv/config';
 import { validateEnv } from './src/config/env.js';
 import { connectDB } from './src/config/db.js';
 import { createApp } from './src/app.js';
+import cors from "cors";
 
+app.use(cors({
+  origin: "https://talent-agent-frontend.vercel.app"
+}));
 // Crash immediately if required env vars are missing
 validateEnv();
 
