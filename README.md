@@ -36,34 +36,6 @@ Backend service for the Talent Agent platform. It handles authentication, job in
 - `scripts/` - seed/backfill/diagnostic scripts
 - `docs/atlas/candidate_profile_vector_index.json` - Atlas vector index template
 
-## Environment Variables
-
-Create `server/.env`:
-
-```env
-PORT=5000
-NODE_ENV=development
-
-MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<dbName>?retryWrites=true&w=majority
-
-JWT_SECRET=<long-random-secret>
-JWT_EXPIRES_IN=7d
-
-CLIENT_URL=http://localhost:5173
-
-# LLM provider (chat/completions)
-GROQ_API_KEY=<key>
-GROQ_BASE_URL=https://api.groq.com/openai/v1
-GROQ_MODEL=openai/gpt-oss-20b
-
-# Optional OpenAI-compatible key fallback
-OPENAI_API_KEY=<optional-or-placeholder>
-
-# Embeddings
-EMBEDDING_MODE=local
-EMBEDDING_MODEL=text-embedding-3-small
-LOCAL_EMBEDDING_DIMS=1536
-
 # Optional override
 VECTOR_INDEX_NAME=candidate_profile_vector_index
 ```
@@ -149,7 +121,7 @@ Base URL: `http://localhost:5000/api`
 ### Shortlists
 
 - `GET /shortlists/:jobId` - full populated shortlist
-- `GET /shortlists/:jobId/export` - CSV export
+
 
 ## Pipeline Stages
 
@@ -159,78 +131,11 @@ Base URL: `http://localhost:5000/api`
 4. Simulate outreach (`conversationAgent.service.js`)
 5. Rank + tier + insights (`ranking.service.js`)
 
-Tier rules:
-
-- `tier1` >= 75
-- `tier2` >= 55
-- `tier3` >= 35
-- `archive` < 35
-
-## Embeddings and Vector Search
 
 ### Candidate Embedding Generation
 
 - Generated on candidate create/update in `candidates.routes.js`
 - Embedding text combines name/headline/role/experience/skills/summary
-
-### Modes
-
-- `EMBEDDING_MODE=local` -> deterministic local embeddings
-- provider mode (default) -> attempts remote embeddings, auto-falls back to local on common auth/model errors
-
-### Atlas Index Template
-
-Use `docs/atlas/candidate_profile_vector_index.json`:
-
-```json
-{
-  "name": "candidate_profile_vector_index",
-  "type": "vectorSearch",
-  "definition": {
-    "fields": [
-      {
-        "type": "vector",
-        "path": "profileEmbedding",
-        "numDimensions": 1536,
-        "similarity": "cosine"
-      }
-    ]
-  }
-}
-```
-
-Apply this to the same DB/collection your app uses (collection: `candidates`).
-
-## Vector Troubleshooting Checklist
-
-If discovery logs show `$vectorSearch returned 0 results`:
-
-1. Run:
-   ```bash
-   npm run embeddings:diagnose
-   ```
-2. Ensure diagnostic reports:
-   - non-zero candidate count
-   - embeddings exist
-   - all vectors are 1536 dims
-   - search indexes on collection >= 1
-3. Confirm index:
-   - name matches `VECTOR_INDEX_NAME`
-   - `type=vectorSearch`
-   - `status=READY`
-   - `path=profileEmbedding`
-   - `numDimensions=1536`
-4. Verify URI includes the intended DB name (not accidental `test`).
-
-## Backfill Embeddings
-
-Use after changing embedding dimensions/model or importing raw candidate records:
-
-```bash
-npm run embeddings:backfill
-npm run embeddings:backfill -- --batch=25
-npm run embeddings:backfill -- --dry-run
-```
 
 ## Security Notes
 
