@@ -15,9 +15,21 @@ export function createApp() {
 
     // Security + parsing
     app.use(helmet());
-    app.use(cors({
-   origin: process.env.CLIENT_URL ?? "https://talent-agent-frontend.vercel.app",
-   credentials: true,
+    const allowedOrigins = [
+  "https://talent-agent-frontend.vercel.app","https://talent-agent-frontend-git-main-raj-kapuriyas-projects.vercel.app"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin) || origin.includes("vercel.app")) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
 }));
     app.use(express.json({ limit: '2mb' }));
     app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
