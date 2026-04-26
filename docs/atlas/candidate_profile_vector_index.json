@@ -1,0 +1,14 @@
+{
+  "name": "candidate_profile_vector_index",
+  "type": "vectorSearch",
+  "definition": {
+    "fields": [
+      {
+        "type": "vector",
+        "path": "profileEmbedding",
+        "numDimensions": 1536,
+        "similarity": "cosine"
+      }
+    ]
+  }
+}

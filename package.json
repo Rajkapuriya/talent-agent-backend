@@ -1,0 +1,34 @@
+{
+  "name": "talent-agent-server",
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "nodemon --watch src index.js",
+    "start": "node index.js",
+    "seed": "node scripts/seedCandidates.js",
+    "embeddings:backfill": "node scripts/backfillCandidateEmbeddings.js",
+    "embeddings:diagnose": "node scripts/diagnoseVectorSearch.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^5.0.1",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.0",
+    "morgan": "^1.10.0",
+    "openai": "^4.52.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4",
+    "supertest": "^7.0.0",
+    "vitest": "^1.6.0"
+  }
+}
